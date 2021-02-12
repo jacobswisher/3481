@@ -1,0 +1,60 @@
+# 
+# Write a Y86 program calculates the sum of the absolute values
+# of all elements in list. The skeleton code is provided below.
+# The main function (given) calls your function, 'sumabs', passing it
+# the address of the list in %rdi and the number of elements
+# in the list in %rsi. You should return the sum in %rax
+# Your code should not depend on the specific list and count provided below. 
+#
+			.pos 0
+main:		irmovq	stack,%rsp              #put address of stack in rsp
+			irmovq	count,%rsi              #put address of length in rsi
+			mrmovq	(%rsi),%rsi             #put value of length in rsi
+			irmovq	list,%rdi               #put address of list in rdi
+			irmovq  0x1,%r9                 #put 1 in r9
+			irmovq  0x8,%r11                #put 8 in r11
+			call	sumabs                  #call sumabs
+			halt
+
+sumabs:
+            subq    %r9,%rsi                #subtract 1 from length of list
+			jl      done                    #finish if 0 elements in list
+			
+			irmovq  0x0,%r8                 #put 0 in r8
+			mrmovq  (%rdi),%r10             #put value of element into r10
+			subq    %r8,%r10                #this is used below to test if number is negative
+			jl      negate                  #if number is negative then negate it
+			addq    %r10,%r8                #put value that is positive into r8
+
+negated:            
+            addq    %r8,%rax                #add absolute value to rax
+            addq    %r11,%rdi               #move list pointer to next element
+            jmp     sumabs                  #always jump back to start of loop
+            
+negate:
+            subq    %r10,%r8                #make list element absolute
+            jmp     negated                 #always jump back to negated with negated value in r8
+            
+done:
+			ret                             #return--result should be in %rax
+
+########## Leave this line here (used for auto-testing) #####################
+			.align	8
+count:		.quad	12
+list:
+			.quad	4
+			.quad	7
+			.quad	-10
+			.quad	-6
+			.quad	15
+			.quad	1
+			.quad	-8
+			.quad	-22
+			.quad	17
+			.quad	-14
+			.quad	-5
+			.quad	13
+	
+			.pos	0x200
+stack:
+
